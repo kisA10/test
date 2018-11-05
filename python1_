@@ -1,0 +1,71 @@
+# coding: utf-8
+
+
+import cv2
+import serial
+
+if __name__ == "__main__":
+
+    Width = 640
+    Height = 480
+    # 内蔵カメラを起動
+    cap = cv2.VideoCapture(1)
+    cap.set(3, Width)  # Width
+    cap.set(4, Height)  # Height
+    #cap.set(5, 15)   # FPS
+
+    # OpenCVに用意されている顔認識するためのxmlファイルのパス
+    cascade_path = "/usr/local/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml"
+    # カスケード分類器の特徴量を取得する
+    cascade = cv2.CascadeClassifier(cascade_path)
+
+    # 顔に表示される枠の色を指定（白色）
+    color = (255,255,255)
+
+
+    ser = serial.Serial('/dev/tty.usbmodem14421', 9600)
+    # デバイス名とボーレートを設定しポートをオープン
+
+    while True:
+
+        # 内蔵カメラから読み込んだキャプチャデータを取得
+        # cap.read()関数は複数（２つ）の戻り値があるので、ret,frameとなる
+        ret, frame = cap.read()
+
+        # モノクロで表示する
+        #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        # 顔認識の実行
+        facerect = cascade.detectMultiScale(frame, scaleFactor=1.2, minNeighbors=2, minSize=(10,10))
+
+        for rect in facerect:
+            img_x = rect[0]+rect[2]/2
+            img_y = rect[1]+rect[3]/2
+            cx = Width/2
+            cy = Height/2
+            text = str(cx-img_x)+" "+str(cy-img_y)
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            cv2.putText(frame,text,(int(img_x),int(img_y)), font, 0.6,(255,255,255),2,cv2.LINE_AA)
+            #print(img_x, img_y)
+            if cx-img_x > 50:
+              ser.write("o".encode())      # 出力
+            elif cx-img_x < -50:
+              ser.write("p".encode())      # 出力
+
+        # 顔が見つかったらcv2.rectangleで顔に白枠を表示する
+        if len(facerect) > 0:
+            for rect in facerect:
+                cv2.rectangle(frame, tuple(rect[0:2]), tuple(rect[0:2]+rect[2:4]), color, thickness=20)
+
+        # 表示
+        cv2.imshow("frame", frame)
+
+        # qキーを押すとループ終了
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            ser.close()
+            # ポートのクローズ
+            break
+
+    # 内蔵カメラを終了
+    cap.release()
+    cv2.destroyAllWindows()
