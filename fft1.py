@@ -16,6 +16,9 @@ def main():
     # 時間信号をCSVファイルに出力（小数点第二位まで）
     np.savetxt("data.csv", f, fmt='%.3f')
 
+    x= np.arange(0,N*dt,dt)
+    plt.plot(x,f)
+    plt.show()
 
 if __name__ == "__main__":
     main()

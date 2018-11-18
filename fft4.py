@@ -37,15 +37,15 @@ def main():
     # グラフ表示
     plt.figure()
     plt.rcParams['font.family'] = 'Times New Roman'
-    plt.rcParams['font.size'] = 17
+    plt.rcParams['font.size'] = 10
 
     # 時間信号（元）
     plt.subplot(221)
     plt.plot(t, f, label='f(n)')
-    plt.xlabel("Time", fontsize=20)
-    plt.ylabel("Signal", fontsize=20)
+    plt.xlabel("Time", fontsize=10)
+    plt.ylabel("Signal", fontsize=10)
     plt.grid()
-    leg = plt.legend(loc=1, fontsize=25)
+    leg = plt.legend(loc=1, fontsize=10)
     leg.get_frame().set_alpha(1)
 
     # 周波数信号(元)

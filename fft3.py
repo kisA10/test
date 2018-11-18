@@ -21,6 +21,10 @@ def main():
     # 変換後のデータ（時間領域）を保存
     np.savetxt("data2.csv", f, fmt='%.3f')
 
+    x= np.arange(0,N*dt,dt)
+    plt.plot(x,f)
+    plt.show()
+
 
 if __name__ == "__main__":
     main()
